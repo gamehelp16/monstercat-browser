@@ -53,6 +53,12 @@ var browser = new Vue({
 			this.getAlbumData();
 		}
 	},
+	watch: {
+		'$route': function(to, from) {
+			ga('set', 'page', location.pathname + location.search + location.hash);
+			ga('send', 'pageview');
+		}
+	},
 	created: function() {
 		this.getAlbumData();
 	}

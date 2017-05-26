@@ -2,7 +2,7 @@
 
 Check out the live demo [here](https://gamehelp16.github.io/monstercat-browser/#/)!
 
-Monstercat Album Browser is a site where you can browse thorugh releases by Monstercat in an easy way.
+Monstercat Album Browser is a site where you can browse through releases by Monstercat in an easy way.
 
 ## Improvements
 
