@@ -1,0 +1,161 @@
+
+@mixin pref($name, $argument) {
+	-webkit-#{$name}: #{$argument};
+	-moz-#{$name}: #{$argument};
+	-ms-#{$name}: #{$argument};
+	-o-#{$name}: #{$argument};
+	#{$name}: #{$argument};
+}
+
+#cards .item {
+	position: relative;
+	text-transform: uppercase;
+	cursor: pointer;
+	@include pref(transition, "all .2s, transform 1s, opacity .5s");
+
+	&.loading {
+		opacity: .3;
+	}
+
+	* {
+		@include pref(transition, "all .2s");
+	}
+
+	.album-id {
+		background: #333;
+		padding: 5px;
+		border-radius: 3px;
+		@include pref(transition, all .3s);
+	}
+
+	&:hover {
+		background: lighten(#222, 10%);
+		
+		.album-id {
+			opacity: .8;
+		}
+	}
+
+	&.unreleased {
+		color: #000;
+		background: #eee;
+
+		&:hover {
+			background: darken(#eee, 15%);
+		}
+
+		.album-id {
+			color: white;
+		}
+	}
+
+	.album-info {
+		* {
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+	}
+
+	.album-artist {
+		margin-bottom: 3px;
+		font-weight: 500;
+	}
+
+	.album-title {
+		opacity: .8;
+		margin-bottom: 2px;
+	}
+}
+
+.item-list {
+	margin: 0 20px;
+	padding: 20px 0;
+	height: 100px;
+
+	& > * {
+		display: inline-block;
+	}
+
+	img {
+		width: 100px;
+		height: 100px;
+		margin: 0 20px;
+	}
+
+	.album-id {
+		float: right;
+		margin-top: 5px;
+		margin-right: 25px;
+		opacity: .4;
+	}
+
+	.album-info {
+		position: relative;
+		top: -18px;
+
+		* {
+			width: 870px;
+		}
+	}
+
+	.album-artist {
+		font-size: 25px;
+	}
+
+	.album-title {
+		font-size: 20px;
+	}
+}
+
+.item-card {
+	margin: 20px;
+	background: #222;
+	width: calc(20% - 40px);
+	float: left;
+
+	// todo: css grid?
+	@media screen and (min-width: 1440px) { width: calc(16.66% - 40px); }
+	@media screen and (min-width: 1680px) { width: calc(14.28% - 40px); }
+	@media screen and (min-width: 1920px) { width: calc(12.5% - 40px); }
+	@media screen and (min-width: 2160px) { width: calc(11.11% - 40px); }
+	@media screen and (min-width: 2400px) { width: calc(10% - 40px); }
+
+	img {
+		width: 100%;
+		position: absolute;
+	}
+
+	.album-id {
+		position: absolute;
+		right: 10px;
+		top: 10px;
+		opacity: 0;
+	}
+
+	.album-info {
+		padding: calc(100% + 20px) 15px 15px;
+		height: 40px;
+
+		* {
+			width: 170px;
+		}
+	}
+
+	.album-artist {
+		font-size: 15px;
+	}
+
+	.album-title {
+		font-size: 13px;
+	}
+}
+
+.cards-list-enter, .cards-list-leave-to {
+	opacity: 0 !important;
+	@include pref(transform, translateY(50px));
+}
+
+.cards-list-leave-active {
+	position: absolute !important;
+}

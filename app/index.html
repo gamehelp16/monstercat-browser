@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+	<meta charset="UTF-8">
+	<title>Monstercat Album Browser</title>
+
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,500">
+	<!--build:css css/style.min.css-->
+	<link rel="stylesheet" href="css/base.css">
+	<link rel="stylesheet" href="css/list.css">
+	<link rel="stylesheet" href="css/album-view.css">
+	<!--endbuild-->
+
+</head>
+<body>
+
+	<div id="app"></div>
+
+	<script type="text/x-template" id="app-template">
+		<transition name="fade">
+			<loading-screen v-if="loading"></loading-screen>
+			<keep-alive v-else><router-view v-keep-scroll-position></router-view></keep-alive>
+		</transition>
+	</script>
+
+	<script type="text/x-template" id="loading-screen-template">
+		<div class="loading-screen">
+			<span class="loading-text">Loading</span>
+		</div>
+	</script>
+
+	<script type="text/x-template" id="main-view-template">
+		<div id="main-view">
+			<h1>Monstercat Album Browser</h1>
+			<a href="https://github.com/gamehelp16/monstercat-browser" id="github-logo" target="_blank" title="Fork me on GitHub!"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAABKVBMVEX////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Oe9X6AAAAYnRSTlMAAQIDBAcIDA0PEBESFBUWGBkeHyEoMTIzNDU4OTw+P0JGWVxeX2BiY2RlZ2hvc3R1eHp+io+Xm52epKmqq62usLe5wcLDxMnQ0dLW2tvc3t/h4uPo6uvs8fLz9fb3+vv8/suNaVkAAAF7SURBVHgBjdHZW9NAFAXwE0iElCARZCkuIotEUFyQBSJERBEILaAo6d6e//+PcO58aZslD/xe5mHuPfOdbzA06R1e1sn65aE3ibw5v8OBjj+HNHuvx5Tenp1av2bOdSJkKWKBaAmxhYiFogVoEzckw+ModXcckryZgDigsgLLu1MVT09V1TvPwgqVAyhlinmpMjsCZWRWCsxTlAEEFIvIWKQIALdLsYaMNYqui02KPw4ynN8Um/Ap1pGzTuEj1Ek2cmz9dogmlVsUuKXSBEUFBaoUoKihQI0iPqaQMxWvnlOsImeV4hz7FBcmMswLin0sU9tBxg61ZYw3qB25SHhyRK0xDuySX179INtfN8qjOvz5u6BNjbsAplvsbVm/qAQGFOMb+1rTULZJPnsqf/MC2kv2bUOYZ+R3lLzPr0ehPWbszITmVsn3GCqRWtVFbKZC/vz45tOj1EBlBgPOCUUpOXDiIMF4+zc98G/DQNrY1tW9Bc26v/owhof6D6AkqSgsdGGuAAAAAElFTkSuQmCC"></a>
+			<div style="clear:both"></div>
+
+			<div class="filter">
+				<div id="type-selection">
+					<label v-for="i in 6" :for="'type-'+(i-1)" :class="{active: (type==i-1)}"><input type="radio" :id="'type-'+(i-1)" :value="i-1" :selected="i==1" v-model="type">{{ categories[i-1] }}</label>
+				</div>
+				<input type="text" placeholder="Filter by title, artist, catalog id" v-model="filter" class="search-bar">
+			</div>
+
+			<div id="info-text" style="margin-right: 20px;">
+				{{ shownResults }} shown out of {{ totalResults[type] }} total results (scroll for more). Album data last loaded <span :title="loadTimestamp">{{ loadSince }}</span> ago (<a href="#" onclick="browser.reloadData()">reload now</a>).</b>
+				<span style="float: right">
+					<img src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTQgMTFoNVY1SDR2NnptMCA3aDV2LTZINHY2em02IDBoNXYtNmgtNXY2em02IDBoNXYtNmgtNXY2em0tNi03aDVWNWgtNXY2em02LTZ2Nmg1VjVoLTV6Ii8+ICAgIDxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=" :class="{active: cardView}" @click="cardView = true" title="View as Grid">
+					<img src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTQgMTRoNHYtNEg0djR6bTAgNWg0di00SDR2NHpNNCA5aDRWNUg0djR6bTUgNWgxMnYtNEg5djR6bTAgNWgxMnYtNEg5djR6TTkgNXY0aDEyVjVIOXoiLz4gICAgPHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==" :class="{active: !cardView}" @click="cardView = false" title="View as List">
+				</span>
+			</div>
+
+			<div id="cards" v-infinite-scroll="loadMore" infinite-scroll-disabled="infiniteScroll" infinite-scroll-distance="100">
+				<transition-group name="cards-list" tag="div">
+					<card v-for="album in filteredAlbumData" :album="album" :key="album.catalogId" :card-view="cardView"></card>
+				</transition-group>
+				<div style="clear: both;"></div>
+			</div>
+		</div>
+	</script>
+
+	<script type="text/x-template" id="card-template">
+		<router-link :to="{ name: 'album', params: { catalogId: album.catalogId }}" tag="div" class="item" :class="{'item-card': cardView, 'item-list': !cardView, unreleased: albumUnreleased}" :title="cardTitle">
+			<div class="album-id">{{ album.catalogId }}</div>
+			<img :src="album.coverUrl + '?image_width=256'">
+			<div class="album-info">
+				<div class="album-artist">{{ albumArtist }}</div>
+				<div class="album-title">{{ albumTitle }}</div>
+			</div>
+		</router-link>
+	</script>
+
+	<script type="text/x-template" id="album-view-template">
+		<div id="album-view">
+			<router-link to="/" id="back-to-home">
+				<img src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPiAgICA8cGF0aCBkPSJNMjAgMTFINy44M2w1LjU5LTUuNTlMMTIgNGwtOCA4IDggOCAxLjQxLTEuNDFMNy44MyAxM0gyMHYtMnoiLz48L3N2Zz4=">
+			</router-link>
+			<router-link :to="'/'+prevCatalogId" id="nav-prev" class="nav-arrow" v-if="prevCatalogId !== undefined">
+				<img src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTEwIDZMOC41OSA3LjQxIDEzLjE3IDEybC00LjU4IDQuNTlMMTAgMThsNi02eiIvPiAgICA8cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PC9zdmc+">
+			</router-link>
+			<router-link :to="'/'+nextCatalogId" id="nav-next" class="nav-arrow" v-if="nextCatalogId !== undefined">
+				<img src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTE1LjQxIDcuNDFMMTQgNmwtNiA2IDYgNiAxLjQxLTEuNDFMMTAuODMgMTJ6Ii8+ICAgIDxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=">
+			</router-link>
+			<div id="album-background" :style="'background-image: linear-gradient(to bottom, rgba(0,0,0,.2) 0%, black 100%), url(\'' + currentAlbumData.coverUrl + '?image_width=256\')'"></div>
+			<div id="album-card">
+				<div id="album-head" :class="{unreleased: albumUnreleased}">
+					<img :src="currentAlbumData.coverUrl + '?image_width=256'">
+					<div id="album-info">
+						<div class="album-catalog-id">{{ albumId }}</div>
+						<div class="album-artist">{{ albumArtist }}</div>
+						<div class="album-title">{{ albumTitle }}</div>
+					</div>
+				</div>
+				<div style="clear: both;"></div>
+				<div id="track-loading" v-if="trackLoading"><span class="loading-text">Loading Tracklist</span></div>
+				<div id="album-tracklist" v-else>
+					<div class="filter">
+						<div>
+							<div class="genre-count" :class="[{active: currentGenre == genre.id}, 'g'+genre.id]" v-for="genre in sortedGenreCount" @click="currentGenre = (currentGenre==genre.id?-1:genre.id)" v-if="genre.count>0">{{ genre.count }}</div>
+						</div>
+						<input type="text" placeholder="Filter by title, artist" v-model="trackFilter" class="search-bar">
+					</div>
+					<track-item :index="-1" key="the-head" :sort-by="sortBy" :sort-direction="sortDirection" @sortChange="changeSort"></track-item>
+					<transition-group name="tracks-list" tag="div">
+						<track-item v-for="track in sortedAlbumTracks" :track="track" :track-filter="trackFilter" :index="track.index" :key="track.title" v-if="track.index>=0?showTrack(track):true"></track-item>
+					</transition-group>
+				</div>
+			</div>
+		</div>
+	</script>
+
+	<script type="text/x-template" id="track-template">
+		<div class="track head" v-if="index<0">
+			<div class="track-genre"></div>
+			<div class="track-number" @click="sortTracks('index')">#<span class="arrow" :class="sortArrow('index')"></span></div>
+			<div class="track-title" @click="sortTracks('title')">Title<span class="arrow" :class="sortArrow('title')"></span></div>
+			<div class="track-artist" @click="sortTracks('artistsTitle')">Artist<span class="arrow" :class="sortArrow('artistsTitle')"></span></div>
+			<div class="track-duration" @click="sortTracks('duration')">
+				<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAQAAABKfvVzAAABEElEQVQ4y73Sy0pCURTG8eNIIWsUjWsSiJEP0CAiuvlCRr6M1QHB57ALzRo0Km2i6FgdmAS/Jl3O9niIiFqz/e31//a67Cj6fUjE3wA/KyenKtY18+pZ7CSKosiajcXpZXfm48auB33r6fR9E/TUlOXlbTnVf8furabdJ4gtBWpRE+yka79DLPc1qc+bJq7mgSp6X+7JkVo2wGEIxKiFu0icznARAl2UM4FtdEJghnwmUMAsBF6+BaYh0MFW5v4reAylS5xmAnU0QukYfcWF6SuGOJiXb9H8WFxCz2mhnfYpGaNpec69hZHNRU/vGWPgzLaCgoq6IUZ2s5oruU597/ZC9wR05NyTqalHjVSr/xBvMFU8WX+eymQAAAAASUVORK5CYII="><span class="arrow" :class="sortArrow('duration')"></span>
+			</div>
+			<div class="track-bpm" @click="sortTracks('bpm')">BPM<span class="arrow" :class="sortArrow('bpm')"></span></div>
+		</div>
+		<div class="track" :class="genreClass" v-else>
+			<div class="track-genre" :title="track.genre"></div>
+			<div class="track-number" :title="track.genre">{{ index+1 }}</div>
+			<div class="track-title" v-html="trackTitle"></div>
+			<div class="track-artist" v-html="trackArtistsTitle"></div>
+			<div class="track-duration" v-html="trackDuration"></div>
+			<div class="track-bpm">{{ Math.round(track.bpm) }}</div>
+		</div>
+	</script>
+	
+	<!--build:js js/main.js -->
+	<script src="js/vue.min.js"></script>
+	<script src="js/vue-router.min.js"></script>
+	<script src="js/vue-resource.min.js"></script>
+	<script src="js/vue-keep-scroll-position.js"></script>
+	<script src="js/vue-infinite-scroll.js"></script>
+	<script src="js/components.js"></script>
+	<script src="js/browser.js"></script>
+	<!-- endbuild -->
+
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-71788573-5', 'auto');
+	  ga('send', 'pageview');
+
+	</script>
+	
+</body>
+</html>
