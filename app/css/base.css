@@ -88,14 +88,22 @@ body {
       display: none; }
     #type-selection label:hover, #type-selection label.active {
       color: white; }
-    #type-selection label.active:after {
+    #type-selection label:after {
       content: '';
       position: absolute;
-      left: 25%;
+      left: 50%;
       margin-top: 30px;
-      width: 50%;
+      width: 0;
       border-bottom: 1px solid white;
-      opacity: .7; }
+      opacity: .7;
+      -webkit-transition: all 0.2s;
+      -moz-transition: all 0.2s;
+      -ms-transition: all 0.2s;
+      -o-transition: all 0.2s;
+      transition: all 0.2s; }
+    #type-selection label.active:after {
+      left: 25%;
+      width: 50%; }
 
 #info-text {
   color: #bbb;
@@ -120,7 +128,7 @@ body {
   background: transparent;
   color: #fff;
   border: 0;
-  border-bottom: 2px solid #444;
+  border-bottom: 2px solid #333;
   padding: 5px 0 5px 30px;
   outline: 0;
   text-overflow: ellipsis;

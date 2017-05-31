@@ -116,15 +116,21 @@ body {
 		&:hover, &.active {
 			color: darken(white, 0%);
 		}
-		
-		&.active:after {
+
+		&:after {
 			content: '';
 			position: absolute;
-			left: 25%;
+			left: 50%;
 			margin-top: 30px;
-			width: 50%;
+			width: 0;
 			border-bottom: 1px solid white;
 			opacity: .7;
+			@include pref(transition, all .2s);
+		}
+		
+		&.active:after {
+			left: 25%;
+			width: 50%;
 		}
 
 		&:first-child {
@@ -170,7 +176,7 @@ body {
 	background: transparent;
 	color: #fff;
 	border: 0;
-	border-bottom: 2px solid #444;
+	border-bottom: 2px solid #333;
 	padding: 5px 0 5px 30px;
 	outline: 0;
 	text-overflow: ellipsis;

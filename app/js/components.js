@@ -34,15 +34,15 @@ var mainView = Vue.extend({
 			secondsSinceLoad: 0,
 
 			shownResults: 0,
-			totalResults: [0,0,0,0,0,0],
+			totalResults: [0,0,0,0,0,0,0],
 
-			categories: ['Compilations', 'LPs', 'EPs', 'Podcasts', 'Singles', 'Misc.'],
+			categories: ['All', 'Compilations', 'LPs', 'EPs', 'Podcasts', 'Singles', 'Misc.'],
 			type: 0,
 			busy: false,
 
 			filter: '',
 			numLoad: 30,
-			loadTo: [30,30,30,30,30,30],
+			loadTo: [30,30,30,30,30,30,30],
 
 			cardView: true,
 		}
@@ -72,16 +72,18 @@ var mainView = Vue.extend({
 				if(!album.catalogId) return false;
 				switch(that.type) {
 					case 0:
-						return (album.catalogId.indexOf("MC0") > -1 || album.catalogId.indexOf("MCUV") > -1);
+						return true;
 					case 1:
-						return (album.catalogId.indexOf("MCLP") > -1);
+						return (album.catalogId.indexOf("MC0") > -1 || album.catalogId.indexOf("MCUV") > -1);
 					case 2:
-						return (album.catalogId.indexOf("MCEP") > -1);
+						return (album.catalogId.indexOf("MCLP") > -1);
 					case 3:
-						return (album.catalogId.indexOf("MCP") > -1 || album.catalogId.indexOf("MCSP") > -1 || album.catalogId.indexOf("COTW") > -1);
+						return (album.catalogId.indexOf("MCEP") > -1);
 					case 4:
-						return (album.catalogId.indexOf("MCS") > -1 || album.catalogId.indexOf("MCF") > -1) && album.catalogId.indexOf("MCSP") < 0;
+						return (album.catalogId.indexOf("MCP") > -1 || album.catalogId.indexOf("MCSP") > -1 || album.catalogId.indexOf("COTW") > -1);
 					case 5:
+						return (album.catalogId.indexOf("MCS") > -1 || album.catalogId.indexOf("MCF") > -1) && album.catalogId.indexOf("MCSP") < 0;
+					case 6:
 						return (album.catalogId.indexOf("MCB") > -1 || album.catalogId.indexOf("MCX") > -1 || album.catalogId.indexOf("MCH") > -1) && album.catalogId.indexOf("MCX004-") < 0;
 					default:
 						return false;
@@ -129,6 +131,11 @@ var mainView = Vue.extend({
 				Vue.set(that.loadTo, that.type, Math.min(that.loadTo[that.type] + that.numLoad, that.totalResults[that.type]));
 				that.busy = false;
 			}
+		}
+	},
+	watch: {
+		'$route': function(to, from) {
+			document.title = "Monstercat Album Browser";
 		}
 	},
 	created: function() {
@@ -183,8 +190,8 @@ var albumView = Vue.extend({
 				["drum---bass"],
 				["house"],
 				["electro"],
-				["hard-dance", "happy-hardcore", "moombahton", "hardstyle"],
-				["glitch-hop", "a110-bpm"],
+				["hard-dance", "happy-hardcore", "hardstyle"],
+				["glitch-hop", "a110-bpm", "moombahton"],
 				["nu-disco", "indie-dance", "indie-dance---nu-disco", "synthwave"],
 				["future-bass"],
 				["trance"],
@@ -323,6 +330,7 @@ var albumView = Vue.extend({
 			that.currentGenre = -1;
 			that.sortBy = "index";
 			that.sortDirection = 1;
+			document.title = "["+catalogId+"] "+that.albumArtist+" - "+that.albumTitle+" | Monstercat Album Browser";
 
 			if(that.$parent.albumTracks[catalogId] !== undefined) {
 				that.currentAlbumTracks = that.$parent.albumTracks[catalogId];

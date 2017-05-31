@@ -15,4 +15,21 @@ This new version of the site has been updated with a ton of improvements:
 - New features like album/track filtering and tracklist sorting.
 - Fancy new animations!
 
+## Changelog
+
+**May 31st, 2017**
+
+- Added "all" category
+- Tweaked some animations
+- Click album art to enlarge in album view
+- Change page title according to content
+- Fixed moombahton genre color
+
+## Todo list:
+
+- Retain scrolling in the main view
+- Track streaming
+- Sort album list by oldest
+- Some free EPs (like MCF025) are categorized as a single
+
 If you want, you can still find the old version of the site [here](https://github.com/gamehelp16/monstercat-browser-old).

@@ -41,7 +41,7 @@
 
 			<div class="filter">
 				<div id="type-selection">
-					<label v-for="i in 6" :for="'type-'+(i-1)" :class="{active: (type==i-1)}"><input type="radio" :id="'type-'+(i-1)" :value="i-1" :selected="i==1" v-model="type">{{ categories[i-1] }}</label>
+					<label v-for="i in 7" :for="'type-'+(i-1)" :class="{active: (type==i-1)}"><input type="radio" :id="'type-'+(i-1)" :value="i-1" :selected="i==1" v-model="type">{{ categories[i-1] }}</label>
 				</div>
 				<input type="text" placeholder="Filter by title, artist, catalog id" v-model="filter" class="search-bar">
 			</div>
@@ -88,7 +88,7 @@
 			<div id="album-background" :style="'background-image: linear-gradient(to bottom, rgba(0,0,0,.2) 0%, black 100%), url(\'' + currentAlbumData.coverUrl + '?image_width=256\')'"></div>
 			<div id="album-card">
 				<div id="album-head" :class="{unreleased: albumUnreleased}">
-					<img :src="currentAlbumData.coverUrl + '?image_width=256'">
+					<a :href="currentAlbumData.coverUrl" target="_blank"><img :src="currentAlbumData.coverUrl + '?image_width=256'"></a>
 					<div id="album-info">
 						<div class="album-catalog-id">{{ albumId }}</div>
 						<div class="album-artist">{{ albumArtist }}</div>

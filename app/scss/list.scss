@@ -11,7 +11,7 @@
 	position: relative;
 	text-transform: uppercase;
 	cursor: pointer;
-	@include pref(transition, "all .2s, transform 1s, opacity .5s");
+	@include pref(transition, "all .5s");
 
 	&.loading {
 		opacity: .3;
@@ -21,10 +21,16 @@
 		@include pref(transition, "all .2s");
 	}
 
+	img {
+		max-width: 220px;
+		@include pref(transition, "all .2s");
+	}
+
 	.album-id {
 		background: #333;
 		padding: 5px;
 		border-radius: 3px;
+		z-index: 999;
 		@include pref(transition, all .3s);
 	}
 
@@ -112,7 +118,7 @@
 	margin: 20px;
 	background: #222;
 	width: calc(20% - 40px);
-	float: left;
+	display: inline-block;
 
 	// todo: css grid?
 	@media screen and (min-width: 1440px) { width: calc(16.66% - 40px); }
@@ -153,7 +159,7 @@
 
 .cards-list-enter, .cards-list-leave-to {
 	opacity: 0 !important;
-	@include pref(transform, translateY(50px));
+	@include pref(transform, translateY(50px) scale(.7));
 }
 
 .cards-list-leave-active {
