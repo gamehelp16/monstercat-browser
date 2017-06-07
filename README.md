@@ -17,6 +17,10 @@ This new version of the site has been updated with a ton of improvements:
 
 ## Changelog
 
+**June 07th, 2017**
+
+- Fixed some stuff regarding MCRL001
+
 **May 31st, 2017**
 
 - Added "all" category
@@ -25,7 +29,7 @@ This new version of the site has been updated with a ton of improvements:
 - Change page title according to content
 - Fixed moombahton genre color
 
-## Todo list:
+## Todo list
 
 - Retain scrolling in the main view
 - Track streaming

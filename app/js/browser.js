@@ -49,7 +49,6 @@ var browser = new Vue({
 		reloadData: function() {
 			localStorage.browserAlbumDataTime = 0;
 			this.loading = true;
-			console.log('a');
 			this.getAlbumData();
 		}
 	},

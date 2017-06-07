@@ -10,7 +10,7 @@ var stuff = new Vue({ // should I use Vuex?
 			else return name;
 		},
 		showTitle: function(album) {
-			return album.title.replace(/Monstercat( -|:)? /g, "");
+			return album.title.replace(/^Monstercat( -|:)? /g, "");
 		},
 		isUnreleased: function(album) {
 			return new Date(album.releaseDate) > new Date();
@@ -74,7 +74,7 @@ var mainView = Vue.extend({
 					case 0:
 						return true;
 					case 1:
-						return (album.catalogId.indexOf("MC0") > -1 || album.catalogId.indexOf("MCUV") > -1);
+						return (album.catalogId.indexOf("MC0") > -1 || album.catalogId.indexOf("MCUV") > -1 || album.catalogId.indexOf("MCRL") > -1);
 					case 2:
 						return (album.catalogId.indexOf("MCLP") > -1);
 					case 3:
